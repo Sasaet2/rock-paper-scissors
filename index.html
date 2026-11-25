@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حجر ورقة مقص</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      background: #050811;
+      color: #f8fafc;
+      font-family: "Cairo", sans-serif;
+      padding: 24px;
+    }
+    h1 {
+      background: linear-gradient(90deg, #00f3ff, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 2.4rem;
+      font-weight: 900;
+    }
+    .scoreboard {
+      display: flex;
+      gap: 40px;
+      padding: 14px 34px;
+      border: 1px solid rgba(0, 243, 255, .25);
+      border-radius: 16px;
+      background: rgba(15, 23, 42, .7);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .scoreboard span { color: #00f3ff; }
+    .choices { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+    .choice {
+      width: 110px;
+      height: 110px;
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .05);
+      font-size: 3rem;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .choice:hover { transform: translateY(-6px) scale(1.05); border-color: #00f3ff; }
+    .result {
+      min-height: 80px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    .result .win  { color: #10b981; }
+    .result .lose { color: #ef4444; }
+    .result .draw { color: #f59e0b; }
+    .reset {
+      padding: 10px 28px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 12px;
+      background: transparent;
+      color: #94a3b8;
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .reset:hover { color: #fff; border-color: #8b5cf6; }
+  </style>
+</head>
+<body>
+  <h1>حجر ورقة مقص</h1>
+
+  <div class="scoreboard">
+    <div>أنت: <span id="player-score">0</span></div>
+    <div>الكمبيوتر: <span id="computer-score">0</span></div>
+  </div>
+
+  <div class="choices">
+    <button class="choice" data-move="rock" aria-label="حجر">✊</button>
+    <button class="choice" data-move="paper" aria-label="ورقة">✋</button>
+    <button class="choice" data-move="scissors" aria-label="مقص">✌️</button>
+  </div>
+
+  <div class="result" id="result">اختر حركتك!</div>
+
+  <button class="reset" id="reset">تصفير النتيجة</button>
+
+  <script>
+    const moves = {
+      rock:     { emoji: "✊", name: "حجر",  beats: "scissors" },
+      paper:    { emoji: "✋", name: "ورقة", beats: "rock" },
+      scissors: { emoji: "✌️", name: "مقص",  beats: "paper" },
+    };
+
+    let playerScore = 0;
+    let computerScore = 0;
+
+    const resultEl = document.getElementById("result");
+    const playerScoreEl = document.getElementById("player-score");
+    const computerScoreEl = document.getElementById("computer-score");
+
+    function computerMove() {
+      const keys = Object.keys(moves);
+      return keys[Math.floor(Math.random() * keys.length)];
+    }
+
+    function play(playerMove) {
+      const computer = computerMove();
+      const you = moves[playerMove];
+      const cpu = moves[computer];
+      const picked = `أنت ${you.emoji} ${you.name} — الكمبيوتر ${cpu.emoji} ${cpu.name}`;
+
+      if (playerMove === computer) {
+        resultEl.innerHTML = `${picked}<br><span class="draw">تعادل!</span>`;
+      } else if (you.beats === computer) {
+        playerScore++;
+        resultEl.innerHTML = `${picked}<br><span class="win">كسبت الجولة!</span>`;
+      } else {
+        computerScore++;
+        resultEl.innerHTML = `${picked}<br><span class="lose">خسرت الجولة!</span>`;
+      }
+      playerScoreEl.textContent = playerScore;
+      computerScoreEl.textContent = computerScore;
+    }
+
+    document.querySelectorAll(".choice").forEach(button => {
+      button.addEventListener("click", () => play(button.dataset.move));
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      playerScore = 0;
+      computerScore = 0;
+      playerScoreEl.textContent = "0";
+      computerScoreEl.textContent = "0";
+      resultEl.textContent = "اختر حركتك!";
+    });
+  </script>
+</body>
+</html>
